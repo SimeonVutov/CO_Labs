@@ -32,7 +32,9 @@ main:
     mov $format, %rdi       # first parameter: input format string
     mov $exp, %rsi          # second parameter: address where to save input from scanf
     call scanf              # call scanf to get the base value
-    
+
+    mov base, %edi
+    mov exp, %esi
     call pow                # call pow subroutine           
 
     mov $resultPrompt, %rdi     # first parameter: resultPrompt string
@@ -56,7 +58,7 @@ pow:                        # subroutine for calculating the result of param1 to
     movq $1, %rsp           # setting local variable total to 1
 
     condition:              # checks if exp > 0
-        cmpl $0, exp        # compare EXP to 0
+        cmpl $0, %esi        # compare EXP to 0
         jg loop             # jump to loop if greater than 0 
     
                             # EPILOGUE
@@ -68,9 +70,9 @@ pow:                        # subroutine for calculating the result of param1 to
     loop:
                             # total = total * base
         movq %rsp, %rax     # copy the address of local variable total to RAX
-        mull base           # multiply RAX with base value and result is stored again in RAX
+        mull %edi           # multiply RAX with base value and result is stored again in RAX
         
         mov %rax, %rsp      # storing the value of total in RSP(location of local variable total)
-        subl $1, exp        # decrementing exponent after the multiplication
+        subl $1, %esi        # decrementing exponent after the multiplication
         jmp condition       # jump to condition
 
