@@ -5,7 +5,7 @@ exp:  .long 0               # exp - exponent variable size(32 bits)
 .text                       
 basePrompt: .asciz "Enter a non negative base number: "            # base prompt text constant for printf
 expPrompt: .asciz "Enter a non negative exponent number: "         # exp prompt text constant for printf 
-resultPrompt: .asciz "The result is: %ld\n"                        # result prompt text constant for printf
+resultPrompt: .asciz "%ld"                                       # result prompt text constant for printf
 format: .asciz "%d"                                                # format string for getting long number from scanf
 
 .global main
@@ -33,15 +33,17 @@ main:
     mov $exp, %rsi          # second parameter: address where to save input from scanf
     call scanf              # call scanf to get the base value
 
-    mov base, %edi
-    mov exp, %esi
+    mov base, %edi          # first parameter: base variable value
+    mov exp, %esi           # second parameter: exp variable value
     call pow                # call pow subroutine           
 
-    mov $resultPrompt, %rdi     # first parameter: resultPrompt string
-    mov %rax, %rsi              # second paramter: copy the result value after the calculations from rax register
-    mov $0, %rax                # no vector registers in use for scanf
-    call printf                 # call printf to print the result
-
+    mov %rax, %r10          # copy result of pow from rax to r11(storing temporary)
+    mov $resultPrompt, %rdi # first parameter: input format string
+    mov %rax, %rsi          # second parameter: result from the pow subroutine
+    mov $0, %rax
+    call printf             # call printf to print the result
+                            
+    mov %r10, %rax          # return result from pow from r11 back to rax
                             # EPILOGUE
     mov %rbp, %rsp          # clear local variables from the stack
     pop %rbp                # restore base pointer location
@@ -61,6 +63,7 @@ pow:                        # subroutine for calculating the result of param1 to
         cmpl $0, %esi        # compare EXP to 0
         jg loop             # jump to loop if greater than 0 
     
+    mov %rsp, %rax          # store final value of total to rax
                             # EPILOGUE
     mov %rbp, %rsp          # clear local variables from the stack
     pop %rbp                # restore base pointer location
