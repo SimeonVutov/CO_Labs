@@ -22,7 +22,7 @@ main:
     mov $number, %rsi         # second parameter: address where to save input from scanf
     call scanf              # call scanf to get the base value
     
-    mov $number, %rdi
+    mov number, %rdi
     call factorial                # call factorial subroutine           
     mov %rax, %r10
 
@@ -44,23 +44,22 @@ factorial:
     mov %rsp, %rbp
 
     subq $8, %rsp
-    movq %rdi, %rsp
+    movq %rdi, -8(%rbp)
 
     condition:
         cmpq $1, %rdi
-        jne recur
+        jg recur
         mov $1, %rax
         jmp return
-
     
 
     recur:
-        mov %rsp, %rdi
+        mov -8(%rbp), %rdi
         dec %rdi
         call factorial
         # return n * factorial(n-1
     return:
-        mulq %rsp
+        mulq -8(%rbp)
         
         mov %rbp, %rsp
         pop %rbp
