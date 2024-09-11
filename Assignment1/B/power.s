@@ -1,6 +1,6 @@
-.data
-base: .long 0               # base variable size(32 bits)
-exp:  .long 0               # exp - exponent variable size(32 bits)
+.bss
+base: .long               # base variable size(32 bits)
+exp:  .long               # exp - exponent variable size(32 bits)
 
 .text                       
 basePrompt: .asciz "Enter a non negative base number: "            # base prompt text constant for printf
