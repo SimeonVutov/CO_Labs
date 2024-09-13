@@ -57,13 +57,13 @@ pow:                        # subroutine for calculating the result of param1 to
     mov %rsp, %rbp          # copy stack pointer value to base pointer
 
     sub $8, %rsp            # reserve space on the stack for local variable: total(64 bits)
-    movq $1, %rsp           # setting local variable total to 1
+    movq $1, -8(%rbp)           # setting local variable total to 1
 
     condition:              # checks if exp > 0
         cmpl $0, %esi        # compare EXP to 0
         jg loop             # jump to loop if greater than 0 
     
-    mov %rsp, %rax          # store final value of total to rax
+    mov -8(%rbp), %rax          # store final value of total to rax
                             # EPILOGUE
     mov %rbp, %rsp          # clear local variables from the stack
     pop %rbp                # restore base pointer location
@@ -72,10 +72,10 @@ pow:                        # subroutine for calculating the result of param1 to
 
     loop:
                             # total = total * base
-        movq %rsp, %rax     # copy the address of local variable total to RAX
+        movq -8(%rbp), %rax     # copy the address of local variable total to RAX
         mull %edi           # multiply RAX with base value and result is stored again in RAX
         
-        mov %rax, %rsp      # storing the value of total in RSP(location of local variable total)
+        mov %rax, -8(%rbp)      # storing the value of total in RSP(location of local variable total)
         subl $1, %esi        # decrementing exponent after the multiplication
         jmp condition       # jump to condition
 
