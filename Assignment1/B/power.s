@@ -1,6 +1,6 @@
 .data
-base: .quad 0               # base variable size(32 bits)
-exp:  .quad 0             # exp - exponent variable size(32 bits)
+base: .quad 0               # base variable size(64 bits)
+exp:  .quad 0               # exp - exponent variable size(64 bits)
 
 .text                       
 basePrompt: .asciz "Enter a non negative base number: "            # base prompt text constant for printf
