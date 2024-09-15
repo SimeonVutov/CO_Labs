@@ -1,5 +1,5 @@
 .bss
-number: .quad               # number variable size(32 bits)
+number: .quad               # number variable size(64 bit)
 
 .text                       
 numberPrompt: .asciz "Enter a non negative number: "            # number prompt text constant for printf
