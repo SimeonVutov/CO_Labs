@@ -2,7 +2,7 @@
 format: .asciz "%d"
 formatChar: .asciz "%c"
 
-.include "helloWorld.s"
+.include "final.s"
 
 .global main
 
@@ -33,17 +33,17 @@ decode:
     movq %r12, %r13         # set current element to be the first one
 
     loop1:
-        leaq (%r13), %rdi       # get letter ascii representation
+        # leaq (%r13), %rdi       # get letter ascii representation
         leaq +1(%r13), %rsi     # get number of times to print the letter
-        movzbq (%rdi), %rdi     # get actual character byte and extend it to quad
+        movzbq (%r13), %rdi     # get actual character byte and extend it to quad
         movzbq (%rsi), %rsi     # get amount byte and extend it to quad
         call print              # first param - character, second param - amount
         
         leaq +2(%r13), %rdi     # calculate the address of first byte of index
-        movzbq (%rdi), %rax     # Store index value(4 bytes) in rax(rezo extended to quad)
+        movl (%rdi), %eax     # Store index value(4 bytes) in rax(rezo extended to quad)
         
         exitCaseCheck:
-            cmpq $0, %rax       # check if next index is 0 
+            cmpl $0, %eax       # check if next index is 0 
             je endDecode        # if next index is 0 we exit decode
  
         movq $8, %rdx           # Copy 8 in rdx
