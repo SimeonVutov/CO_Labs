@@ -56,7 +56,7 @@ pow:                        # subroutine for calculating the result of param1 to
     push %rbp               # push the base pointer
     mov %rsp, %rbp          # copy stack pointer value to base pointer
 
-    sub $8, %rsp            # reserve space on the stack for local variable: total(64 bits)
+    sub $16, %rsp            # reserve space on the stack for local variable: total(64 bits)
     movq $1, %rsp           # setting local variable total to 1
 
     condition:              # checks if exp > 0
