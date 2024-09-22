@@ -40,7 +40,7 @@ decode:
         call print              # first param - character, second param - amount
         
         leaq +2(%r13), %rdi     # calculate the address of first byte of index
-        movl (%rdi), %eax     # Store index value(4 bytes) in rax(rezo extended to quad)
+        movl (%rdi), %eax       # Store index value(4 bytes) in eax
         
         exitCaseCheck:
             cmpl $0, %eax       # check if next index is 0 
