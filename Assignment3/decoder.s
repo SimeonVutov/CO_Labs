@@ -33,14 +33,12 @@ decode:
     movq %r12, %r13         # set current element to be the first one
 
     loop1:
-        # leaq (%r13), %rdi       # get letter ascii representation
-        leaq +1(%r13), %rsi     # get number of times to print the letter
+        # leaq +1(%r13), %rsi     # get number of times to print the letter
         movzbq (%r13), %rdi     # get actual character byte and extend it to quad
-        movzbq (%rsi), %rsi     # get amount byte and extend it to quad
+        movzbq 1(%r13), %rsi     # get number of times to print and extend it to quad
         call print              # first param - character, second param - amount
         
-        leaq +2(%r13), %rdi     # calculate the address of first byte of index
-        movl (%rdi), %eax     # Store index value(4 bytes) in rax(rezo extended to quad)
+        movl 2(%r13), %eax       # Store index value(4 bytes) in eax
         
         exitCaseCheck:
             cmpl $0, %eax       # check if next index is 0 
