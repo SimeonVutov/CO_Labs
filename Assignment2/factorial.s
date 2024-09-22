@@ -11,16 +11,16 @@ format: .asciz "%ld"                                            # format string 
 main:
                             # PROLOGUE
     push %rbp               # push the base pointer
-    movq %rsp, %rbp          # copy stack pointer value to base pointer
+    movq %rsp, %rbp         # copy stack pointer value to base pointer
 
-    movq $0, %rax            # no vector registers in use for printf
+    movq $0, %rax              # no vector registers in use for printf
     movq $numberPrompt, %rdi   # first parameter: basePrompt string
-    call printf             # call printf to print the string
+    call printf                # call printf to print the string
 
     movq $0, %rax            # no vector registers in use for scanf
     movq $format, %rdi       # first parameter: input format string
-    movq $number, %rsi         # second parameter: address where to save input from scanf
-    call scanf              # call scanf to get the base value
+    movq $number, %rsi       # second parameter: address where to save input from scanf
+    call scanf               # call scanf to get the base value
     
     movq number, %rdi           # set first parameter of factorial to number variable's value
     call factorial              # call factorial subroutine           
@@ -43,26 +43,24 @@ main:
 factorial:
                             #PROLOGUE
     push %rbp               # push the base pointer
-    movq %rsp, %rbp          # copy stack pointer value to base pointer
+    movq %rsp, %rbp         # copy stack pointer value to base pointer
 
-    endCasesCheck:          # this is the bottom of the recursion 
+    baseCasesCheck:         # this is the bottom of the recursion 
         cmpq $2, %rdi       # compare if the rdi to 2
-        jl endCase         # jump to endCase if rdi is less than 2(1 or 0) then we have reached the the bottom of the recursion or
+        jl baseCase         # jump to base Case if rdi is less than 2(1 or 0) then we have reached the the bottom of the recursion or
                             # we have 0 as input
 
     subq $16, %rsp          # reserve 16 bytes on the stack for local variables
     movq %rdi, -8(%rbp)     # use first 8 bytes to store the variable number there
 
-    condition:              # actual condition for the recursion(input > 1)
-        cmpq $1, %rdi       # compare rdi to 1
-        jg recur            # jump to recursion part if rdi is greater than 1
+    jg recur                # jump to recursion part if rdi is greater than 1
 
-    endCase:                # bottom of recursion
+    baseCase:                # bottom of recursion
         movq $1, %rax        # store 1 in rax for return value of the subroutine
-        jmp return          # jump to return section to exit the subroutine
+        jmp return           # jump to return section to exit the subroutine
     
     recur:                      # recursion part
-        movq -8(%rbp), %rdi      # get number variable value from stack and store it in rdi
+        movq -8(%rbp), %rdi     # get number variable value from stack and store it in rdi
         dec %rdi                # decrease rdi value
         call factorial          # call factorial but as first parameter number - 1
                                 
@@ -71,7 +69,7 @@ factorial:
         mulq -8(%rbp)           # multiply the variable nuber on the stack with the result of factorial return value in rax 
     
     return:                 # return section which contains EPILOGUE
-        movq %rbp, %rsp      # clear local variables from the stack
+        movq %rbp, %rsp     # clear local variables from the stack
         pop %rbp            # restore base pointer location
         ret                 # return from factorial subroutine
 
