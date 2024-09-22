@@ -45,9 +45,9 @@ factorial:
     push %rbp               # push the base pointer
     movq %rsp, %rbp          # copy stack pointer value to base pointer
 
-    endCasesCheck:          # this is the bottom of the recursion 
+    baseCasesCheck:          # this is the bottom of the recursion 
         cmpq $2, %rdi       # compare if the rdi to 2
-        jl endCase         # jump to endCase if rdi is less than 2(1 or 0) then we have reached the the bottom of the recursion or
+        jl baseCase          # jump to base Case if rdi is less than 2(1 or 0) then we have reached the the bottom of the recursion or
                             # we have 0 as input
 
     subq $16, %rsp          # reserve 16 bytes on the stack for local variables
@@ -57,7 +57,7 @@ factorial:
         cmpq $1, %rdi       # compare rdi to 1
         jg recur            # jump to recursion part if rdi is greater than 1
 
-    endCase:                # bottom of recursion
+    baseCase:                # bottom of recursion
         movq $1, %rax        # store 1 in rax for return value of the subroutine
         jmp return          # jump to return section to exit the subroutine
     
