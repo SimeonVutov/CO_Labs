@@ -37,13 +37,11 @@ main:
     mov exp, %esi           # second parameter: exp variable value
     call pow                # call pow subroutine           
 
-    mov %rax, %r10          # copy result of pow from rax to r11(storing temporary)
     mov $resultPrompt, %rdi # first parameter: input format string
     mov %rax, %rsi          # second parameter: result from the pow subroutine
-    mov $0, %rax
+    mov $0, %rax            # no vector registers in use for printf
     call printf             # call printf to print the result
                             
-    mov %r10, %rax          # return result from pow from r11 back to rax
                             # EPILOGUE
     mov %rbp, %rsp          # clear local variables from the stack
     pop %rbp                # restore base pointer location
