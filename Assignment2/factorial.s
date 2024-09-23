@@ -60,7 +60,6 @@ factorial:
         jmp return           # jump to return section to exit the subroutine
     
     recur:                      # recursion part
-        movq -8(%rbp), %rdi     # get number variable value from stack and store it in rdi
         dec %rdi                # decrease rdi value
         call factorial          # call factorial but as first parameter number - 1
                                 
