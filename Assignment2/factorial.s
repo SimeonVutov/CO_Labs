@@ -24,15 +24,12 @@ main:
     
     movq number, %rdi           # set first parameter of factorial to number variable's value
     call factorial              # call factorial subroutine           
-    movq %rax, %r10             # copy result of factorial execution to r10(for temporary)
 
     movq $resultPrompt, %rdi     # first parameter: resultPrompt string
-    movq %r10, %rsi              # second parameter: the return value of factorial execution
+    movq %rax, %rsi              # second parameter: the return value of factorial execution
     movq $0, %rax                # no vector registers in use for scanf
     call printf                 # call printf to print the result
 
-    movq %r10, %rax         # copy again the return value of factorial to rax
-                            
                             # EPILOGUE
     movq %rbp, %rsp         # clear local variables from the stack
     pop %rbp                # restore base pointer location
@@ -60,7 +57,6 @@ factorial:
         jmp return           # jump to return section to exit the subroutine
     
     recur:                      # recursion part
-        movq -8(%rbp), %rdi     # get number variable value from stack and store it in rdi
         dec %rdi                # decrease rdi value
         call factorial          # call factorial but as first parameter number - 1
                                 
