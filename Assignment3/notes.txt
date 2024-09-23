@@ -1,0 +1,2 @@
+NOT IMPORTANT    | Next memory address               | Copy number |   ASCII char
+00000000 00000010 00000000 00000000 00000000 00001010 00000001         01001000
