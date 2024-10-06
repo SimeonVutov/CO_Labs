@@ -1,7 +1,9 @@
 .text
 format: .asciz "%d"
 formatChar: .asciz "%c"
-colorEffectFormat:  .asciz "\033[%d;%dm"
+foregroundColorEffectFormat: .asciz "\033[38;5;%dm"
+backgroundColorEffectFormat: .asciz "\033[48;5;%dm"
+
 
 # Special Effects' codes
 resetEffects: .asciz "\033[0m"
@@ -14,25 +16,6 @@ blinkEffect: .asciz "\033[5m"
 
 .include "final.s"
 
-foregroundColors:
-    .quad 30  # Black
-    .quad 31  # Red
-    .quad 32  # Green
-    .quad 33  # Yellow
-    .quad 34  # Blue
-    .quad 35  # Magenta
-    .quad 36  # Cyan
-    .quad 37  # White
-backgroundColors:
-    .quad 40  # Black
-    .quad 41  # Red
-    .quad 42  # Green
-    .quad 43  # Yellow
-    .quad 44  # Blue
-    .quad 45  # Magenta
-    .quad 46  # Cyan
-    .quad 47  # White
-    
 specialEffects:
     .quad 0, resetEffects      # Reset to normal
     .quad 37, stopBlinkingEffect   # Stop blinking
@@ -168,19 +151,24 @@ set_effects:
         jmp endSetEffects
 
     applyEffect:
-            addq $8, %rax
-            movq (%rax), %rdi
-            call printf
-            jmp endSetEffects
+        addq $8, %rax
+        movq (%rax), %rdi
+        call printf
+        jmp endSetEffects
     
     colorEffects:
-        shlq $3, %rdi
-        shlq $3, %rsi
-        movq backgroundColors(%rsi), %rdx
-        movq foregroundColors(%rdi), %rsi
-        movq $colorEffectFormat, %rdi   # Load format string into %rdi
+        
+        movq %rdi, %r8
+        movq %rsi, %r9
+        movq $0, %rax    
+        movq $foregroundColorEffectFormat, %rdi
+        movq %r8, %rsi
         call printf
-
+        
+        movq $backgroundColorEffectFormat, %rdi
+        movq %r9, %rsi
+        call printf
+        
     endSetEffects:
         # Restore stack frame
         movq %rbp, %rsp
