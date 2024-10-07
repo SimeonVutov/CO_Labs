@@ -125,10 +125,9 @@ print:
         ret                 # return from print Subroutine
 
 set_effects:
-    pushq %rbp
-    movq %rsp, %rbp
+    pushq %rbp              # push the base pointer (and align the stack)
+    movq %rsp, %rbp         # copy stack pointer value to base pointer
     
-    # Calculate the address for background color
     cmpq %rdi, %rsi
     jne colorEffects
     
@@ -136,43 +135,43 @@ set_effects:
         movq $0, %rcx               # Set loop counter to 0
     
         loop_effects:
+                                            # Formula to calculate -> specialEffects + counter * 16
             movq %rcx, %rax                 # Copy value of counter to rax
             shlq $4, %rax                   # shift left 4 times rax (counter * 16)
             addq $specialEffects, %rax      # add start address of specialEffects table
-            movq (%rax), %r8
+            movq (%rax), %r8                # copy value of first part of the pair from specialEffects table from calculated address
 
-            cmpq %rdi, %r8                 # compare foreground number to 
-            je applyEffect
+            cmpq %rdi, %r8                  # compare foreground number to 
+            je applyEffect                  # apply the effect we want
             
-            addq $1, %rcx
-            cmpq $7, %rcx
-            jl loop_effects
+            addq $1, %rcx                   # increase the loop counter by 1
+            cmpq $7, %rcx                   # compare the counter to 7, because we have only 7 special effects
+            jl loop_effects                 # if counter < 7, then we can continue looping
     
-        jmp endSetEffects
+        jmp endSetEffects                   # jump to epilogue to return from the set_effects Subroutine
 
     applyEffect:
-        addq $8, %rax
-        movq (%rax), %rdi
-        call printf
-        jmp endSetEffects
+        addq $8, %rax               # add 8 to the address stored in rax (specialEffects + counter * 16 + 8)
+        movq (%rax), %rdi           # copy the value stored in the address in rax to rdi(first param)
+        call printf                 # print the value in rdi
+        jmp endSetEffects           # jump to epilogue to return from set_effects Subroutine
     
     colorEffects:
+        movq %rdi, %r8              # Copy value of foreground to r8
+        movq %rsi, %r9              # Copy value of background to r9
+        movq $0, %rax               # no vector arguments
+        movq $foregroundColorEffectFormat, %rdi     # first param: the ansi code format string for foreground
+        movq %r8, %rsi              # second param: the value of foreground color
+        call printf                 # call printf Subroutine
         
-        movq %rdi, %r8
-        movq %rsi, %r9
-        movq $0, %rax    
-        movq $foregroundColorEffectFormat, %rdi
-        movq %r8, %rsi
-        call printf
-        
-        movq $backgroundColorEffectFormat, %rdi
-        movq %r9, %rsi
-        call printf
+        movq $backgroundColorEffectFormat, %rdi     # first param: the ansi code format string for background
+        movq %r9, %rsi              # second param: the value of background color
+        call printf                 # call printf Subroutine
         
     endSetEffects:
         # Restore stack frame
-        movq %rbp, %rsp
-        popq %rbp
+        movq %rbp, %rsp             # clear local variables from stack 
+        popq %rbp                   # restore base pointer location 
         ret
 
 main:
