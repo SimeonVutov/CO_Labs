@@ -23,7 +23,7 @@ specialEffects:
     .quad 66, faintEffect          # Faint
     .quad 105, concealEffect       # Conceal
     .quad 153, revealEffect        # Reveal
-    .quad 182, blinkEffect          # Blink
+    .quad 182, blinkEffect         # Blink
 
 .global main
 
@@ -124,12 +124,14 @@ print:
         popq %rbp           # restore base pointer
         ret                 # return from print Subroutine
 
+# first param(rdi): foreground color number
+# second param(rsi): background color number
 set_effects:
     pushq %rbp              # push the base pointer (and align the stack)
     movq %rsp, %rbp         # copy stack pointer value to base pointer
     
-    cmpq %rdi, %rsi
-    jne colorEffects
+    cmpq %rdi, %rsi         # compare foreground and background color values
+    jne colorEffects        # if they are different we set the specific colors
     
     otherEffects:
         movq $0, %rcx               # Set loop counter to 0
@@ -157,16 +159,16 @@ set_effects:
         jmp endSetEffects           # jump to epilogue to return from set_effects Subroutine
     
     colorEffects:
-        movq %rdi, %r8              # Copy value of foreground to r8
-        movq %rsi, %r9              # Copy value of background to r9
-        movq $0, %rax               # no vector arguments
+        movq %rdi, %r8                              # Copy value of foreground to r8
+        movq %rsi, %r9                              # Copy value of background to r9
+        movq $0, %rax                               # no vector arguments
         movq $foregroundColorEffectFormat, %rdi     # first param: the ansi code format string for foreground
-        movq %r8, %rsi              # second param: the value of foreground color
-        call printf                 # call printf Subroutine
+        movq %r8, %rsi                              # second param: the value of foreground color
+        call printf                                 # call printf Subroutine
         
         movq $backgroundColorEffectFormat, %rdi     # first param: the ansi code format string for background
-        movq %r9, %rsi              # second param: the value of background color
-        call printf                 # call printf Subroutine
+        movq %r9, %rsi                              # second param: the value of background color
+        call printf                                 # call printf Subroutine
         
     endSetEffects:
         # Restore stack frame
