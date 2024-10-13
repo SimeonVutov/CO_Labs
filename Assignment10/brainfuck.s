@@ -14,7 +14,6 @@ format_str: .asciz "We should be executing the following code:\n%s"
 # r12 -> address of the code string in memory
 # r13 -> instruction pointer in the code string
 # r14 -> current memory cell index pointer
-# r15 -> number of opened square brackets
 # rbx -> store the opened brackets inside a skip loop
 brainfuck:
 	pushq %rbp
@@ -23,7 +22,6 @@ brainfuck:
     movq %rdi, %r12
     movq $0, %r13
     movq $0, %r14
-    movq $0, %r15
     movq $0, %rbx
     loop:
         movb (%r12, %r13), %al
@@ -101,7 +99,6 @@ brainfuck:
             je skip_loop_logic
             pushq %r13                          # save address of beginning of the loop
             subq $8, %rsp                       # align stack
-            incq %r15        
             jmp next
            
             skip_start_loop_case:
@@ -124,7 +121,6 @@ brainfuck:
             cmpb $0, (%rax)
             jne return_to_start_of_loop
             addq $16, %rsp                      # remove the bracket address because we need to exit the loop
-            decq %r15
             jmp next
         return_to_start_of_loop:
             addq $8, %rsp
