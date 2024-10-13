@@ -19,12 +19,12 @@ check_validity:
 	movq	%rsp, %rbp		# copy stack pointer value to base pointer
 
 	movq $1, %rsi			# boolean variable whether parantheses are valid
-	movq $0, %rdx			# amount of open brackets that are not "closed"
+	movq $0, %rdx			# amount of open brackets that are not "closed" 
 	
 	movq $0, %r11			# counter (which char are we at, "i" in for loop)
 
 		iterating_string:   # loop
-
+		# base with index addressing - rdi is the start address of the message 
 		movb    (%rdi, %r11), %al  # load the current character into %al - rdi(starting address), r11 - counter
     	cmpb    $0, %al            # check if it's the null terminator
     	je      end_count          # if yes, jump to end_count
@@ -55,7 +55,7 @@ check_validity:
 			cmpb $'<', %al
 			je push_open_bracket
 
-			check_if_brackets_match:
+			check_if_brackets_match:	# if current bracket is not open, we go here
 			
 				check_bracket_2_0:
 				cmpb $')', %al			# check if current closing bracket is ')'
@@ -124,10 +124,14 @@ check_validity:
 	je return_invalid
 
 	movq $valid_msg, %rax		# valid
+	movq $valid_msg, %rdi
+	call printf
 	jmp epilogue_
 
 	return_invalid:
 	movq $invalid_msg, %rax		# invalid
+	movq $invalid_msg, %rdi
+	call printf
 
 	epilogue_:
 	movq	%rbp, %rsp		# clear local variables from stack
