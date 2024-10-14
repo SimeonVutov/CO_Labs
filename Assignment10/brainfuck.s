@@ -20,6 +20,11 @@ brainfuck:
 	pushq %rbp                          # Push base pointer to the stack
 	movq %rsp, %rbp                     # Set the stack pointer to point to the base pointer
 	
+    pushq %r12                          # push calle saved registers to stack, to save their previous value
+    pushq %r13
+    pushq %r14
+    pushq %rbx
+
     movq %rdi, %r12                     # Copy the address of the brainfuck string to r12
     movq $0, %r13                       # Set the instruction pointer to 0
     movq $0, %r14                       # Set the current memory cell index to 0
@@ -135,7 +140,13 @@ brainfuck:
             movb $0, skip_loop                  # set skip_loop to false
             jmp next                            # jump to next to prepare for the restart of loop
     
-    end_brainfuck:                              # Epilogue
+    end_brainfuck:
+        popq %rbx                               # restore previous value of calle saved registers
+        popq %r14
+        popq %r13
+        popq %r12
+        # Epilogue    
+
         movq %rbp, %rsp                         # Remove the local variables on the stack, by reseting the rsp
         popq %rbp                               # remove the base pointer from the stack
         ret                                     # return from the subroutine
