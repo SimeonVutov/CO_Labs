@@ -193,7 +193,7 @@ sha1_chunk:								# rsi - address of w[0]
 		popq %r12
 
 		# epilogue
-		popq %rbp
 		movq %rbp, %rsp
+		popq %rbp
 
 	ret
