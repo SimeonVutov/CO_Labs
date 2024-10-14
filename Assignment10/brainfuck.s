@@ -123,12 +123,13 @@ brainfuck:
             decq %rbx                           # decrement the opened brackets inside skip loop
             cmpq $0, %rbx                       # compare opened brackets inside skip loop is 0
             je reset_skip_loop                  # if it is 0, then we have reached the end of the skip loop and need to reset the variable related to it
+                                                # if it is 0, we have found the "RIGHT" closing bracket of the skip loop
             jmp next                            # jump to next to prepare for the restart of loop
         continue_end_loop:
             leaq memory_cells(, %r14), %rax     # calculate the address of the current memory cell
             cmpb $0, (%rax)                     # comapre the value in the current memery cell with 0
-            jne return_to_start_of_loop         # if it is not 0, then we restart the brainfuck loop
-            addq $16, %rsp                      # if it is 0, then we need to exit the loop
+            jne return_to_start_of_loop         # if it is not 0, then we RESTART the brainfuck loop
+            addq $16, %rsp                      # if it is 0, then we need to EXIT the loop
                                                 # we add 16 to rsp to align the stack and remove the instruction pointer(8 bytes) from the stack
             jmp next                            # jump to next to prepare for the restart of loop
         return_to_start_of_loop:
