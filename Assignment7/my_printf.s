@@ -12,12 +12,12 @@ digits_array: .skip 20      # we will store the digits of a number in this separ
 
 .text
 # format_str: .asciz "Hello! This is created by %s and %s, by spending %d nights with only %u hours of sleep. %%"     # example format str
-format_str: .asciz "%d %d %d %d %d"
+format_str: .asciz "%d %d %d %d %d %d %d"
 minus_symbol: .asciz "-"
 name1: .asciz "The quick brown fox quickly jumps over the lazy dog!"        # values to replace "%smth"
 # name2: .asciz "Shureto"
 
-# nights: .quad 123 
+# nights: .quad 123
 # hours: .quad 5
 n1: .quad 1
 n2: .quad 2
@@ -25,6 +25,7 @@ n3: .quad 3
 n4: .quad 4
 n5: .quad 5
 n6: .quad 6
+n7: .quad 7
 .global main
 
 main:
@@ -37,6 +38,8 @@ main:
     movq $n3, %rcx
     movq $n4, %r8
     movq $n5, %r9
+    pushq $n7
+    pushq $n6
                             # iff more than 6 parameters - the stack should be used
     call my_printf
 
@@ -117,7 +120,7 @@ my_printf:
             jmp continue_case2
             
             configure_stack_for_more_arguments2:
-                movq %rbp, %rsp                 
+                movq %rbp, %rsp
                 addq $16, %rsp
             
             continue_case2:
@@ -220,24 +223,24 @@ my_printf:
             jmp loop
     end_my_printf:
         cmpb $1, normal_string_after_formatter
-        jne end
+        jne continue_end
         call pre_printing_string
         
-        movq $5, %rcx
-        subq arguments_counter, %rcx
-        loop1:
-            cmpq $0, %rcx
-            jle end_loop1
+        continue_end:
+            movq $5, %rcx
+            subq arguments_counter, %rcx
+            loop1:
+                cmpq $0, %rcx
+                jle end_loop1
 
-            addq $8, %rsp
-            jmp loop1
-        end_loop1:
-        popq %rbx
-        popq %r14
-        popq %r13
-        popq %r12
-        # epilogue
-        end:
+                addq $8, %rsp
+                jmp loop1
+            end_loop1:
+            popq %rbx
+            popq %r14
+            popq %r13
+            popq %r12
+            # epilogue
             movq %rbp, %rsp
             popq %rbp
             ret
@@ -318,7 +321,7 @@ get_size_of_string:
 # first parameter string address
 # second parameter string size to print
 print_string:
-    pushq %rbp              # prologue (is it a subroutine or a label?)
+    pushq %rbp
     movq %rsp, %rbp
     movq %rdi, %rax          # we need rdi, that's why we copy
 
