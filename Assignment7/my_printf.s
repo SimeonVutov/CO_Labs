@@ -12,13 +12,14 @@ digits_array: .skip 20      # we will store the digits of a number in this separ
 
 .text
 # format_str: .asciz "Hello! This is created by %s and %s, by spending %d nights with only %u hours of sleep. %%"     # example format str
-format_str: .asciz "%d %%% %u %d %d Moni %d Shureto %d %dsjhdgfksdjgfj% %"
+# format_str: .asciz "%d %%% %u %d %d Moni %d Shureto %d %dsjhdgfksdjgfj% %"
+format_str: .asciz "%d"
 minus_symbol: .asciz "-"
 # name2: .asciz "Shureto"
 
 # nights: .quad 123
 # hours: .quad 5
-n1: .quad 1
+n1: .quad 42
 n2: .quad -2
 n3: .quad 3
 n4: .quad 4
@@ -34,14 +35,20 @@ main:
     
     movq $format_str, %rdi  # passing the format string
     movq $n1, %rsi
-    movq $n2, %rdx
-    movq $n3, %rcx
-    movq $n4, %r8
-    movq $n5, %r9
-    pushq $n8
-    pushq $n7
-    pushq $n6
+    # movq $n2, %rdx
+    # movq $n3, %rcx
+    # movq $n4, %r8
+    # movq $n5, %r9
+    # pushq $n8
+    # pushq $n7
+    # pushq $n6
+    # subq $8, %rsp
                             # iff more than 6 parameters - the stack should be used
+    movq $14, %r14
+    movq $13, %r13
+    movq $12, %r12
+    movq $1111, %rbx
+
     call my_printf
 
     movq %rbp, %rsp
@@ -54,17 +61,25 @@ main:
 my_printf:
     pushq %rbp              # prologue
     movq %rsp, %rbp
-    subq $8, %rsp
     # callee saved registers (pop them afterwards)
+    subq $8, %rsp
     pushq %r12
+    subq $8, %rsp
     pushq %r13
+    subq $8, %rsp
     pushq %r14
+    subq $8, %rsp
     pushq %rbx
     # function arguments
+    subq $8, %rsp
     pushq %r9               # in reverse order because stack is LIFO
+    subq $8, %rsp
     pushq %r8
+    subq $8, %rsp
     pushq %rcx
+    subq $8, %rsp
     pushq %rdx
+    subq $8, %rsp
     pushq %rsi
 
     movq %rdi, %r12
@@ -90,11 +105,12 @@ my_printf:
                 movq arguments_counter, %rax
                 subq $5, %rax
 
-                movq 16(%rbp, %rax, 8), %r14
+                movq 24(%rbp, %rax, 8), %r14
                 # r14 = 6
                 jmp continue_case1
             normal_use_1:
                 popq %r14
+                addq $8, %rsp
             continue_case1:
                 call pre_printing_string    # subroutine because we want to return and we use it in several places
 
@@ -123,11 +139,12 @@ my_printf:
                 movq arguments_counter, %rax
                 subq $5, %rax
 
-                movq 16(%rbp, %rax, 8), %r14
+                movq 24(%rbp, %rax, 8), %r14
                 # r14 = 6
                 jmp continue_case2
             normal_use_2:
                 popq %r14
+                addq $8, %rsp
 
             continue_case2:
                 call pre_printing_string
@@ -176,10 +193,11 @@ my_printf:
                 movq arguments_counter, %rax
                 subq $5, %rax
 
-                movq 16(%rbp, %rax, 8), %r14
+                movq 24(%rbp, %rax, 8), %r14
                 jmp continue_case3
             normal_use_3:
                 popq %r14
+                addq $8, %rsp
             continue_case3:
                 call pre_printing_string
 
@@ -239,12 +257,16 @@ my_printf:
                 cmpq $0, %rcx
                 jle end_loop1
 
-                addq $8, %rsp
+                addq $16, %rsp
+                decq %rcx
                 jmp loop1
             end_loop1:
             popq %rbx
+            addq $8, %rsp
             popq %r14
+            addq $8, %rsp
             popq %r13
+            addq $8, %rsp
             popq %r12
             # epilogue
             movq %rbp, %rsp
