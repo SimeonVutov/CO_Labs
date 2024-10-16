@@ -12,20 +12,20 @@ digits_array: .skip 20      # we will store the digits of a number in this separ
 
 .text
 # format_str: .asciz "Hello! This is created by %s and %s, by spending %d nights with only %u hours of sleep. %%"     # example format str
-format_str: .asciz "%d %d %d %d %d %d %d"
+format_str: .asciz "%d %%% %u %d %d Moni %d Shureto %d %dsjhdgfksdjgfj% %"
 minus_symbol: .asciz "-"
-name1: .asciz "The quick brown fox quickly jumps over the lazy dog!"        # values to replace "%smth"
 # name2: .asciz "Shureto"
 
 # nights: .quad 123
 # hours: .quad 5
 n1: .quad 1
-n2: .quad 2
+n2: .quad -2
 n3: .quad 3
 n4: .quad 4
 n5: .quad 5
 n6: .quad 6
 n7: .quad 7
+n8: .asciz "Oto mnogo pie"
 .global main
 
 main:
@@ -38,6 +38,7 @@ main:
     movq $n3, %rcx
     movq $n4, %r8
     movq $n5, %r9
+    pushq $n8
     pushq $n7
     pushq $n6
                             # iff more than 6 parameters - the stack should be used
@@ -83,19 +84,20 @@ my_printf:
             cmpb $'s', %al
             jne case2
             cmpb $5, arguments_counter
-            jl continue_case1
-            je configure_stack_for_more_arguments1
-            jmp continue_case1
+            jl normal_use_1
 
-            configure_stack_for_more_arguments1:
-                movq %rbp, %rsp                 
-                addq $16, %rsp
-                                            # else use stack -> set rsp before the my_printf subroutine
-            
+            stack_use_1:
+                movq arguments_counter, %rax
+                subq $5, %rax
+
+                movq 16(%rbp, %rax, 8), %r14
+                # r14 = 6
+                jmp continue_case1
+            normal_use_1:
+                popq %r14
             continue_case1:
                 call pre_printing_string    # subroutine because we want to return and we use it in several places
 
-                popq %r14                   # pop from stack to get the next argument
                 movq %r14, %rdi
                 call get_size_of_string
                 # result is in rax
@@ -115,17 +117,20 @@ my_printf:
             cmpb $'u', %al
             jne case3
             cmpb $5, arguments_counter
-            jl continue_case2
-            je configure_stack_for_more_arguments2
-            jmp continue_case2
-            
-            configure_stack_for_more_arguments2:
-                movq %rbp, %rsp
-                addq $16, %rsp
-            
+            jl normal_use_2
+
+            stack_use_2:
+                movq arguments_counter, %rax
+                subq $5, %rax
+
+                movq 16(%rbp, %rax, 8), %r14
+                # r14 = 6
+                jmp continue_case2
+            normal_use_2:
+                popq %r14
+
             continue_case2:
                 call pre_printing_string
-                popq %r14                   # pop from stack to get the next argument
 
                 cmpq $0, (%r14)
                 movq (%r14), %r14
@@ -165,17 +170,18 @@ my_printf:
             jne case4
             
             cmpb $5, arguments_counter
-            jl continue_case3
-            je configure_stack_for_more_arguments3
-            jmp continue_case3
-            
-            configure_stack_for_more_arguments3:
-                movq %rbp, %rsp                 
-                addq $16, %rsp
-            
+            jl normal_use_3
+
+            stack_use_3:
+                movq arguments_counter, %rax
+                subq $5, %rax
+
+                movq 16(%rbp, %rax, 8), %r14
+                jmp continue_case3
+            normal_use_3:
+                popq %r14
             continue_case3:
                 call pre_printing_string
-                popq %r14                   # pop from stack to get the next argument
 
                 cmpq $0, (%r14)
                 movq (%r14), %r14
